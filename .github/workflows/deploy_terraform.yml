@@ -94,6 +94,9 @@ jobs:
               echo "::add-mask::$localdeploymentToken"
               echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
               echo "Fetched token."
+
+    - name: List contents of src directory
+      run: ls
       
     - name: Build And Deploy
       id: builddeploy
