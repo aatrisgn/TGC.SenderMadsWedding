@@ -62,5 +62,32 @@ jobs:
       id: plan
       run: terraform plan -input=false -var-file="envs/dev/vars.dev.tfvars" -out=tfplan #UPDATE VARS file
 
+  deployment_job:
+    runs-on: ubuntu-latest
+    environment: dev
+    
+    steps:
+    - name: Fetch SWA Token
+      id: fetchSWAToken
+      uses: azure/CLI@v1
+      with: 
+          inlineScript: |
+              localdeploymentToken=$(az staticwebapp secrets list --name "${{ inputs.SWA-name }}" --query "properties.apiKey" -o tsv)
+              echo "::add-mask::$localdeploymentToken"
+              echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
+              echo "Fetched token."
+
+    # - name: Build And Deploy
+    #   id: builddeploy
+    #   uses: Azure/static-web-apps-deploy@v1
+    #   with:
+    #     azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
+    #     action: "upload"
+    #     app_location: "./src"
+    #     api_location: ""
+    #     skip_app_build: true
+    #     skip_api_build: true
+    #     config_file_location: ./src
+
     # - name: Terraform Apply
     #   run: terraform apply -auto-approve tfplan
