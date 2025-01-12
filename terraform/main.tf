@@ -31,10 +31,10 @@ resource "azurerm_dns_zone" "dev-dns-zone" {
 }
 
 resource "azurerm_role_assignment" "dns_zone_reader" {
-  count              = var.environment_type_name == "dev" ? 1 : 0
-  scope              = azurerm_dns_zone.dev-dns-zone.id
-  role_definition_id = azurerm_role_definition.reader.id
-  principal_id       = var.dev_dns_zone_reader_spn_id
+  count                = var.environment_type_name == "dev" ? 1 : 0
+  scope                = azurerm_dns_zone.dev-dns-zone.id
+  role_definition_name = "Reader"
+  principal_id         = var.dev_dns_zone_reader_spn_id
 }
 
 resource "azurerm_dns_ns_record" "dev_childzone_record" {
