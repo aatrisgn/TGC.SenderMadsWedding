@@ -69,7 +69,7 @@ jobs:
       run: terraform plan -input=false -var-file="envs/dev.tfvars" -out=tfplan
     
     - name: Terraform Apply
-      run: terraform apply -auto-approve tfplang
+      run: terraform apply -auto-approve tfplan
 
     - name: Get Terraform Outputs 
       id: terraform_outputs 
