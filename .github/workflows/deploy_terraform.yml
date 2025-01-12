@@ -69,6 +69,7 @@ jobs:
   deployment_job:
     runs-on: ubuntu-latest
     environment: dev
+    needs: build_job
     
     steps:
 
