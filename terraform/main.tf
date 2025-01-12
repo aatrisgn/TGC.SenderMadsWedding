@@ -40,7 +40,7 @@ resource "azurerm_role_assignment" "dns_zone_reader" {
 resource "azurerm_dns_ns_record" "dev_childzone_record" {
   count               = var.environment_type_name == "prd" ? 1 : 0
   name                = "dev"
-  zone_name           = azurerm_dns_zone.dev-dns-zone.name
+  zone_name           = azurerm_dns_zone.dev_dns_zone.name
   resource_group_name = data.azurerm_resource_group.predefined_resource_group.name
   ttl                 = 300
 
