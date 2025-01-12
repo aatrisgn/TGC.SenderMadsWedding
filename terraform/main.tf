@@ -25,14 +25,14 @@ resource "azurerm_static_web_app" "primary_static_web_app" {
   sku_size            = "Free"
 }
 
-resource "azurerm_dns_zone" "dev-dns-zone" {
+resource "azurerm_dns_zone" "dev_dns_zone" {
   name                = local.dns_zone_resource_name
   resource_group_name = data.azurerm_resource_group.predefined_resource_group.name
 }
 
 resource "azurerm_role_assignment" "dns_zone_reader" {
   count                = var.environment_type_name == "dev" ? 1 : 0
-  scope                = azurerm_dns_zone.dev-dns-zone.id
+  scope                = azurerm_dns_zone.dev_dns_zone.id
   role_definition_name = "Reader"
   principal_id         = var.dev_dns_zone_reader_spn_id
 }
