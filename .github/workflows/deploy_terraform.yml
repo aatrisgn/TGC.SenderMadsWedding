@@ -14,7 +14,7 @@ name: Deploy Terraform
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "feature/automatic-deployment"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -68,6 +68,9 @@ jobs:
       id: plan
       run: terraform plan -input=false -var-file="envs/dev.tfvars" -out=tfplan
     
+    - name: Terraform Apply
+      run: terraform apply -auto-approve tfplan
+
     - name: Get Terraform Outputs 
       id: terraform_outputs 
       run: echo "::set-output name=static_web_app_resource_name::$(terraform output static_web_app_resource_name)"
@@ -148,5 +151,4 @@ jobs:
     #     skip_api_build: true
     #     config_file_location: ./src
 
-    # - name: Terraform Apply
-    #   run: terraform apply -auto-approve tfplan
+    
