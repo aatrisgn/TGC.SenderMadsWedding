@@ -17,12 +17,6 @@ variable "dev_dns_zone_name" {
   default  = null
 }
 
-variable "dev_dns_zone_zone_name" {
-  type     = string
-  nullable = true
-  default  = null
-}
-
 variable "dev_dns_zone_reader_spn_id" {
   type     = string
   nullable = true
