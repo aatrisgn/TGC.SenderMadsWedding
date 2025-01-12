@@ -72,9 +72,6 @@ jobs:
     environment: dev
     needs: build_job_dev
     name: Deploy DEV application code
-    defaults:
-      run:
-        working-directory: ./src
     
     steps:
 
