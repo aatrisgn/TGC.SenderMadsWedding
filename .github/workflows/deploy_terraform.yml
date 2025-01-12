@@ -98,18 +98,18 @@ jobs:
               echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
               echo "Fetched token."
       
-    # - name: Build And Deploy
-    #   id: builddeploy
-    #   uses: Azure/static-web-apps-deploy@v1
-    #   if: github.event.inputs.deployAppCode == 'true'
-    #   with:
-    #     azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
-    #     action: "upload"
-    #     app_location: ./src
-    #     api_location: ""
-    #     skip_app_build: true
-    #     skip_api_build: true
-    #     config_file_location: ./src
+    - name: Build And Deploy
+      id: builddeploy
+      uses: Azure/static-web-apps-deploy@v1
+      if: github.event.inputs.deployAppCode == 'true'
+      with:
+        azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
+        action: "upload"
+        app_location: ./src
+        api_location: ""
+        skip_app_build: true
+        skip_api_build: true
+        config_file_location: ./src
 
   build_job_prd:
     runs-on: ubuntu-latest
