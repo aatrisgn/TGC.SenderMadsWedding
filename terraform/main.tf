@@ -37,5 +37,5 @@ resource "azurerm_dns_ns_record" "dev_childzone_record" {
   resource_group_name = data.azurerm_resource_group.predefined_resource_group.name
   ttl                 = 300
 
-  records = data.azurerm_dns_ns_record.dev_dns_zone[0].records
+  records = data.azurerm_dns_ns_record.dev_dns_zone[0].records //Not the prettiest, but easy solution since we will only have 1 DNS zone on this reference ever.
 }
