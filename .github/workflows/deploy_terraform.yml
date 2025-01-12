@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     outputs:
-      static_web_app_resource_name_output: ${{ steps.set-output-step.outputs.terraform_outputs }}
+      static_web_app_resource_name_output: ${{ steps.set-output-step.outputs.static_web_app_resource_name_output }}
 
     defaults:
       run:
@@ -76,7 +76,8 @@ jobs:
 
     - name: Set output
       id: terraform_outputs
-      run: echo "static_web_app_resource_name_output=$(terraform output static_web_app_resource_name)" >> $GITHUB_OUTPUT
+      run: echo "static_web_app_resource_name_output="TEST"" >> $GITHUB_OUTPUT
+      #run: echo "static_web_app_resource_name_output=$(terraform output static_web_app_resource_name)" >> $GITHUB_OUTPUT
     
   deployment_job_dev:
     runs-on: ubuntu-latest
