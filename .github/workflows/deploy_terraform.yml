@@ -74,6 +74,7 @@ jobs:
     name: Deploy DEV application code
     
     steps:
+    - uses: actions/checkout@v3
 
     - name: Azure login
       uses: azure/login@v2
@@ -101,11 +102,11 @@ jobs:
       with:
         azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
         action: "upload"
-        app_location: "."
+        app_location: ./src
         api_location: ""
         skip_app_build: true
         skip_api_build: true
-        config_file_location: "."
+        config_file_location: ./src
 
   build_job_prd:
     runs-on: ubuntu-latest
