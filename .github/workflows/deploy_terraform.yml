@@ -34,8 +34,9 @@ jobs:
   build_job_dev:
     runs-on: ubuntu-latest
     environment: dev
+    name: Deploy DEV Infrastructure
     outputs:
-      static_web_app_resource_name_output: ${{ steps.set-output-step.outputs.static_web_app_resource_name_output }}
+      static_web_app_resource_name_output: ${{ steps.terraform_outputs.outputs.static_web_app_resource_name_output }}
 
     defaults:
       run:
@@ -83,6 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     needs: build_job_dev
+    name: Deploy DEV application code
     
     steps:
 
@@ -110,6 +112,7 @@ jobs:
   build_job_prd:
     runs-on: ubuntu-latest
     environment: prd
+    name: Deploy PRD Infrastructure
     needs: deployment_job_dev
     if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
     defaults:
