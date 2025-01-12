@@ -74,7 +74,7 @@ jobs:
     name: Deploy DEV application code
     defaults:
       run:
-        working-directory: ./terraform
+        working-directory: ./src
     
     steps:
 
@@ -105,7 +105,7 @@ jobs:
         api_location: ""
         skip_app_build: true
         skip_api_build: true
-        config_file_location: ./src
+        config_file_location: "."
 
   build_job_prd:
     runs-on: ubuntu-latest
