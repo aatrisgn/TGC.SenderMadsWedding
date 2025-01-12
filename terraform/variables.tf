@@ -6,16 +6,16 @@ variable "environment_type_name" {
 }
 
 variable "dev_dns_zone_resource_game" {
-  type = string
+  type     = string
   nullable = true
 }
 
 variable "dev_dns_zone_name" {
-  type = string
+  type     = string
   nullable = true
 }
 
 variable "dev_dns_zone_zone_name" {
-  type = string
+  type     = string
   nullable = true
 }
