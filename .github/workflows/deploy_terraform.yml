@@ -18,6 +18,12 @@ on:
   pull_request:
     branches: ["main"]
   workflow_dispatch:
+    inputs:
+      applyTF:
+        description: 'Deploy to PRD?'
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   id-token: write
@@ -85,6 +91,8 @@ jobs:
               echo "::add-mask::$localdeploymentToken"
               echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
               echo "Fetched token."
+
+    # if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
 
     # - name: Build And Deploy
     #   id: builddeploy
