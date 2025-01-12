@@ -1,23 +1,17 @@
- # # # # # # # # # # # # # # # # # # # # # # # #
-# REPLACE THE FOLLOWING VARIABLES AND ADJUST 
-# - ENVIRONMENT_REFERENCE
-# - CLIENT_ID_SECRET_REFERENCE
-# - SUBSCRIPTION_ID_SECRET_REFERENCE
-# - TENANT_ID_SECRET_REFERENCE
-# - RESOURCE_GROUP_REFERENCE
-# - STORAGE_ACCOUNT_REFERENCE
-# - CONTAINER_NAME_REFERENCE
-#
-# # # # # # # # # # # # # # # # # # # # # # # # #
-
 name: Deploy Terraform
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "feature/automatic-deployment"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
+    inputs:
+      applyTF:
+        description: 'Deploy to PRD?'
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   id-token: write
@@ -25,17 +19,21 @@ permissions:
   pull-requests: write
 
 jobs:
-  build_job:
+  build_job_dev:
     runs-on: ubuntu-latest
-    environment: ENVIRONMENT_REFERENCE #Should be changed, lol
+    environment: dev
+    name: Deploy DEV Infrastructure
+    outputs:
+      static_web_app_resource_name_output: ${{ steps.terraform_outputs.outputs.static_web_app_resource_name_output }}
+
     defaults:
       run:
-        working-directory: ./Terraform
+        working-directory: ./terraform
     
     env:
-      ARM_CLIENT_ID: "${{ secrets.CLIENT_ID_SECRET_REFERENCE }}"
-      ARM_SUBSCRIPTION_ID: "${{ secrets.SUBSCRIPTION_ID_SECRET_REFERENCE }}"
-      ARM_TENANT_ID: "${{ secrets.TENANT_ID_SECRET_REFERENCE }}"
+      ARM_CLIENT_ID: "${{ secrets.SENDERMADSWEDDING_DEV_CLIENT_ID }}"
+      ARM_SUBSCRIPTION_ID: "${{ secrets.SENDERMADSWEDDING_DEV_SUBSCRIPTION_ID }}"
+      ARM_TENANT_ID: "${{ secrets.SENDERMADSWEDDING_DEV_TENANT_ID }}"
       ARM_USE_AZUREAD: true
 
     steps:
@@ -50,17 +48,122 @@ jobs:
     - name: Terraform Init
       run: |
         terraform init \
-        -backend-config=resource_group_name="${{ secrets.RESOURCE_GROUP_REFERENCE }}" \
-        -backend-config=storage_account_name="${{ secrets.STORAGE_ACCOUNT_REFERENCE }}" \
-        -backend-config=container_name="${{ secrets.CONTAINER_NAME_REFERENCE }}" \
-        -backend-config=key="KEY_NAME"
+        -backend-config=resource_group_name="rg-landingzone-shared-dev-westeurope" \
+        -backend-config=storage_account_name="${{ secrets.SENDERMADSWEDDING_DEV_TFSTATE_STORAGE_ACCOUNT_NAME }}" \
+        -backend-config=container_name="${{ secrets.SENDERMADSWEDDING_DEV_TFSTATE_STORAGE_CONTAINER_NAME }}" \
+        -backend-config=key="sendermadswedding.tfstate"
         
     - name: Terraform Validate
       run: terraform validate
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -input=false -var-file="envs/dev/vars.dev.tfvars" -out=tfplan #UPDATE VARS file
-
+      run: terraform plan -input=false -var-file="envs/dev.tfvars" -out=tfplan
+    
     - name: Terraform Apply
       run: terraform apply -auto-approve tfplan
+
+    - name: Set output
+      id: terraform_outputs
+      run: echo "static_web_app_resource_name_output="$(terraform output static_web_app_resource_name)"" >> $GITHUB_OUTPUT
+    
+  deployment_job_dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: build_job_dev
+    name: Deploy DEV application code
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.SENDERMADSWEDDING_DEV_CLIENT_ID }}
+        tenant-id: ${{ secrets.SENDERMADSWEDDING_DEV_TENANT_ID }}
+        subscription-id: ${{ secrets.SENDERMADSWEDDING_DEV_SUBSCRIPTION_ID }}
+
+    - name: Fetch SWA Token
+      id: fetchSWAToken
+      uses: azure/CLI@v1
+      with: 
+          inlineScript: |
+              localdeploymentToken=$(az staticwebapp secrets list --name "${{ needs.build_job_dev.outputs.static_web_app_resource_name_output }}" --query "properties.apiKey" -o tsv)
+              echo "::add-mask::$localdeploymentToken"
+              echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
+              echo "Fetched token."
+
+    - name: List contents of src directory
+      run: ls
+      
+    - name: Build And Deploy
+      id: builddeploy
+      uses: Azure/static-web-apps-deploy@v1
+      with:
+        azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
+        action: "upload"
+        app_location: ./src
+        api_location: ""
+        skip_app_build: true
+        skip_api_build: true
+        config_file_location: ./src
+
+  build_job_prd:
+    runs-on: ubuntu-latest
+    environment: prd
+    name: Deploy PRD Infrastructure
+    needs: deployment_job_dev
+    if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
+    defaults:
+      run:
+        working-directory: ./terraform
+    
+    env:
+      ARM_CLIENT_ID: "${{ secrets.SENDERMADSWEDDING_PRD_CLIENT_ID }}"
+      ARM_SUBSCRIPTION_ID: "${{ secrets.SENDERMADSWEDDING_PRD_SUBSCRIPTIOND_ID }}"
+      ARM_TENANT_ID: "${{ secrets.SENDERMADSWEDDING_PRD_TENANT_ID }}"
+      ARM_USE_AZUREAD: true
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Terraform
+      run: bash "${{ github.workspace }}/.github/scripts/install_terraform.sh" 
+
+    - name: Terraform Fmt
+      run: terraform fmt -check
+
+    - name: Terraform Init
+      run: |
+        terraform init \
+        -backend-config=resource_group_name="rg-landingzone-shared-prd-westeurope" \
+        -backend-config=storage_account_name="${{ secrets.SENDERMADSWEDDING_PRD_TFSTATE_STORAGE_ACCOUNT_NAME }}" \
+        -backend-config=container_name="${{ secrets.SENDERMADSWEDDING_PRD_TFSTATE_STORAGE_CONTAINER_NAME }}" \
+        -backend-config=key="sendermadswedding"
+        
+    - name: Terraform Validate
+      run: terraform validate
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -input=false -var-file="envs/prd.tfvars" -out=tfplan
+    
+    - name: Get Terraform Outputs 
+      id: terraform_outputs 
+      run: echo "::set-output name=static_web_app_resource_name::$(terraform output static_web_app_resource_name)"
+        
+    # if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
+
+    # - name: Build And Deploy
+    #   id: builddeploy
+    #   uses: Azure/static-web-apps-deploy@v1
+    #   with:
+    #     azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
+    #     action: "upload"
+    #     app_location: "./src"
+    #     api_location: ""
+    #     skip_app_build: true
+    #     skip_api_build: true
+    #     config_file_location: ./src
+
+    
