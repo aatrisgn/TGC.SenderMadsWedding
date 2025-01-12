@@ -46,6 +46,14 @@ resource "azurerm_dns_txt_record" "example" {
   }
 }
 
+resource "azurerm_dns_a_record" "example" {
+  name                = "@"
+  zone_name           = azurerm_dns_zone.dev_dns_zone.name
+  resource_group_name = data.azurerm_resource_group.predefined_resource_group.name
+  ttl                 = 300
+  target_resource_id  = azurerm_static_web_app.primary_static_web_app.id
+}
+
 ## Things only done on DEV
 resource "azurerm_role_assignment" "dns_zone_reader" {
   count                = var.environment_type_name == "dev" ? 1 : 0
