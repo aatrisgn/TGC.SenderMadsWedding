@@ -30,3 +30,12 @@ resource "azurerm_dns_zone" "dev-dns-zone" {
   resource_group_name = data.azurerm_resource_group.predefined_resource_group.name
 }
 
+resource "azurerm_dns_ns_record" "dev_childzone_record" {
+  count               = var.environment_type_name == "prd" ? 1 : 0
+  name                = "dev"
+  zone_name           = azurerm_dns_zone.dev-dns-zone.name
+  resource_group_name = data.azurerm_resource_group.predefined_resource_group.name
+  ttl                 = 300
+
+  records = data.azurerm_dns_ns_record.dev_dns_zone.records
+}

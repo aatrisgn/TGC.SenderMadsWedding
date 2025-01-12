@@ -1,2 +1,5 @@
-resource_group_name   = "rg-sendermadswedding-prd-westeurope"
-environment_type_name = "prd"
+resource_group_name        = "rg-sendermadswedding-prd-westeurope"
+environment_type_name      = "prd"
+dev_dns_zone_resource_game = "rg-sendermadswedding-dev-westeurope"
+dev_dns_zone_name          = "dev.madsogsender210625.dk"
+dev_dns_zone_zone_name     = "dev.madsogsender210625.dk"
