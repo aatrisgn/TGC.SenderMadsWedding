@@ -34,6 +34,9 @@ jobs:
   build_job_dev:
     runs-on: ubuntu-latest
     environment: dev
+    outputs:
+      static_web_app_resource_name_output: ${{ steps.set-output-step.outputs.terraform_outputs }}
+
     defaults:
       run:
         working-directory: ./terraform
@@ -71,12 +74,9 @@ jobs:
     - name: Terraform Apply
       run: terraform apply -auto-approve tfplan
 
-    - name: Get Terraform Outputs 
-      id: terraform_outputs 
-      run: echo "::set-output name=static_web_app_resource_name::$(terraform output static_web_app_resource_name)"
-
     - name: Set output
-      run: echo "static_web_app_resource_name=$(terraform output static_web_app_resource_name)" >> $GITHUB_OUTPUT
+      id: terraform_outputs
+      run: echo "static_web_app_resource_name_output=$(terraform output static_web_app_resource_name)" >> $GITHUB_OUTPUT
     
   deployment_job_dev:
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
 
     - name: Use Terraform Outputs
       run: |
-        echo "The output is: ${{ needs.build_job_dev.outputs.static_web_app_resource_name }}"
+        echo "The output is: ${{ needs.build_job_dev.outputs.static_web_app_resource_name_output }}"
       
     - name: Azure login
       uses: azure/login@v2
@@ -109,6 +109,7 @@ jobs:
   build_job_prd:
     runs-on: ubuntu-latest
     environment: prd
+    needs: deployment_job_dev
     if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
     defaults:
       run:
