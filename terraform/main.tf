@@ -55,7 +55,7 @@ resource "azurerm_static_web_app_custom_domain" "example" {
 
 resource "azurerm_dns_txt_record" "example" {
   name                = var.environment_type_name == "dev" ? "_dnsauth.dev" : "_dnsauth"
-  zone_name           = var.environment_type_name == "dev" ? "dev.madsogsender210625.dk" : "madsogsender210625.dk"
+  zone_name           = azurerm_dns_zone.dev_dns_zone.name
   resource_group_name = data.azurerm_resource_group.predefined_resource_group.name
   ttl                 = 300
   record {
