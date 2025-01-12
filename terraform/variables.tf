@@ -8,17 +8,17 @@ variable "environment_type_name" {
 variable "dev_dns_zone_resource_name" {
   type     = string
   nullable = true
-  default = null
+  default  = null
 }
 
 variable "dev_dns_zone_name" {
   type     = string
   nullable = true
-  default = null
+  default  = null
 }
 
 variable "dev_dns_zone_zone_name" {
   type     = string
   nullable = true
-  default = null
+  default  = null
 }
