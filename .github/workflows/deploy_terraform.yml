@@ -31,7 +31,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  build_job:
+  build_job_dev:
     runs-on: ubuntu-latest
     environment: dev
     defaults:
@@ -66,32 +66,74 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -input=false -var-file="envs/dev.tfvars" -out=tfplan #UPDATE VARS file
+      run: terraform plan -input=false -var-file="envs/dev.tfvars" -out=tfplan
     
     - name: Get Terraform Outputs 
       id: terraform_outputs 
-      run: echo "::set-output name=static_web_app_resource_name::$(terraform output static_web_app_resource_name)" 
+      run: echo "::set-output name=static_web_app_resource_name::$(terraform output static_web_app_resource_name)"
     
-  deployment_job:
+  deployment_job_dev:
     runs-on: ubuntu-latest
     environment: dev
-    needs: build_job
+    needs: build_job_dev
     
     steps:
 
     - name: Use Terraform Outputs
-      run: "echo \"The output is: ${{ needs.build_job.outputs.static_web_app_resource_name }}\""
+      run: "echo \"The output is: ${{ needs.build_job_dev.outputs.static_web_app_resource_name }}\""
       
     - name: Fetch SWA Token
       id: fetchSWAToken
       uses: azure/CLI@v1
       with: 
           inlineScript: |
-              localdeploymentToken=$(az staticwebapp secrets list --name "${{ needs.build_job.outputs.static_web_app_resource_name }}" --query "properties.apiKey" -o tsv)
+              localdeploymentToken=$(az staticwebapp secrets list --name "${{ needs.build_job_dev.outputs.static_web_app_resource_name }}" --query "properties.apiKey" -o tsv)
               echo "::add-mask::$localdeploymentToken"
               echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
               echo "Fetched token."
 
+  build_job_prd:
+    runs-on: ubuntu-latest
+    environment: prd
+    if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
+    defaults:
+      run:
+        working-directory: ./terraform
+    
+    env:
+      ARM_CLIENT_ID: "${{ secrets.SENDERMADSWEDDING_PRD_CLIENT_ID }}"
+      ARM_SUBSCRIPTION_ID: "${{ secrets.SENDERMADSWEDDING_PRD_SUBSCRIPTIOND_ID }}"
+      ARM_TENANT_ID: "${{ secrets.SENDERMADSWEDDING_PRD_TENANT_ID }}"
+      ARM_USE_AZUREAD: true
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Terraform
+      run: bash "${{ github.workspace }}/.github/scripts/install_terraform.sh" 
+
+    - name: Terraform Fmt
+      run: terraform fmt -check
+
+    - name: Terraform Init
+      run: |
+        terraform init \
+        -backend-config=resource_group_name="rg-landingzone-shared-prd-westeurope" \
+        -backend-config=storage_account_name="${{ secrets.SENDERMADSWEDDING_PRD_TFSTATE_STORAGE_ACCOUNT_NAME }}" \
+        -backend-config=container_name="${{ secrets.SENDERMADSWEDDING_PRD_TFSTATE_STORAGE_CONTAINER_NAME }}" \
+        -backend-config=key="sendermadswedding"
+        
+    - name: Terraform Validate
+      run: terraform validate
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -input=false -var-file="envs/prd.tfvars" -out=tfplan
+    
+    - name: Get Terraform Outputs 
+      id: terraform_outputs 
+      run: echo "::set-output name=static_web_app_resource_name::$(terraform output static_web_app_resource_name)"
+        
     # if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
 
     # - name: Build And Deploy
