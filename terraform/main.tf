@@ -30,6 +30,13 @@ resource "azurerm_dns_zone" "dev-dns-zone" {
   resource_group_name = data.azurerm_resource_group.predefined_resource_group.name
 }
 
+resource "azurerm_role_assignment" "dns_zone_reader" {
+  count              = var.environment_type_name == "dev" ? 1 : 0
+  scope              = azurerm_dns_zone.dev-dns-zone.id
+  role_definition_id = azurerm_role_definition.reader.id
+  principal_id       = var.dev_dns_zone_reader_spn_id
+}
+
 resource "azurerm_dns_ns_record" "dev_childzone_record" {
   count               = var.environment_type_name == "prd" ? 1 : 0
   name                = "dev"
