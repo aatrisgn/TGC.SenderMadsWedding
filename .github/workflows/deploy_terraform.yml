@@ -164,16 +164,43 @@ jobs:
         
     # if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
 
-    # - name: Build And Deploy
-    #   id: builddeploy
-    #   uses: Azure/static-web-apps-deploy@v1
-    #   with:
-    #     azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
-    #     action: "upload"
-    #     app_location: "./src"
-    #     api_location: ""
-    #     skip_app_build: true
-    #     skip_api_build: true
-    #     config_file_location: ./src
+  deployment_job_prd:
+    runs-on: ubuntu-latest
+    environment: prd
+    needs: build_job_prd
+    name: Deploy PRD application code
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.SENDERMADSWEDDING_PRD_CLIENT_ID }}
+        tenant-id: ${{ secrets.SENDERMADSWEDDING_PRD_TENANT_ID }}
+        subscription-id: ${{ secrets.SENDERMADSWEDDING_PRD_SUBSCRIPTION_ID }}
+
+    - name: Fetch SWA Token
+      id: fetchSWAToken
+      uses: azure/CLI@v1
+      with: 
+          inlineScript: |
+              localdeploymentToken=$(az staticwebapp secrets list --name "${{ needs.build_job_PRD.outputs.static_web_app_resource_name_output }}" --query "properties.apiKey" -o tsv)
+              echo "::add-mask::$localdeploymentToken"
+              echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
+              echo "Fetched token."
+      
+    - name: Build And Deploy
+      id: builddeploy
+      uses: Azure/static-web-apps-deploy@v1
+      if: github.event.inputs.deployAppCode == 'true'
+      with:
+        azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
+        action: "upload"
+        app_location: ./src
+        api_location: ""
+        skip_app_build: true
+        skip_api_build: true
+        config_file_location: ./src
 
     
