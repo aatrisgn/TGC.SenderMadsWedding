@@ -7,7 +7,7 @@ on:
     branches: ["main"]
   workflow_dispatch:
     inputs:
-      applyTF:
+      deployPrd:
         description: 'Deploy to PRD?'
         required: true
         type: boolean
@@ -116,7 +116,7 @@ jobs:
     environment: prd
     name: Deploy PRD Infrastructure
     needs: deployment_job_dev
-    #if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
+    #if: github.event.inputs.deployPrd == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
 
     outputs:
       static_web_app_resource_name_output: ${{ steps.terraform_outputs.outputs.static_web_app_resource_name_output }}
