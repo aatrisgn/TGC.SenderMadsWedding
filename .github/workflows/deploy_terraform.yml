@@ -1,14 +1,19 @@
-name: Deploy Terraform
+name: Deploy S&M Website
 
 on:
   push:
-    branches: ["main", "feature/automatic-deployment"]
+    branches: ["main"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
     inputs:
-      applyTF:
-        description: 'Deploy to PRD?'
+      deployPrd:
+        description: 'Deploy PRD Infrastructure?'
+        required: true
+        type: boolean
+        default: false
+      deployAppCode:
+        description: 'Deploy PRD application code?'
         required: true
         type: boolean
         default: false
@@ -92,9 +97,6 @@ jobs:
               echo "::add-mask::$localdeploymentToken"
               echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
               echo "Fetched token."
-
-    - name: List contents of src directory
-      run: ls
       
     - name: Build And Deploy
       id: builddeploy
@@ -113,14 +115,18 @@ jobs:
     environment: prd
     name: Deploy PRD Infrastructure
     needs: deployment_job_dev
-    if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
+    if: github.event.inputs.deployPrd == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
+
+    outputs:
+      static_web_app_resource_name_output: ${{ steps.terraform_outputs.outputs.static_web_app_resource_name_output }}
+
     defaults:
       run:
         working-directory: ./terraform
     
     env:
       ARM_CLIENT_ID: "${{ secrets.SENDERMADSWEDDING_PRD_CLIENT_ID }}"
-      ARM_SUBSCRIPTION_ID: "${{ secrets.SENDERMADSWEDDING_PRD_SUBSCRIPTIOND_ID }}"
+      ARM_SUBSCRIPTION_ID: "${{ secrets.SENDERMADSWEDDING_PRD_SUBSCRIPTION_ID }}"
       ARM_TENANT_ID: "${{ secrets.SENDERMADSWEDDING_PRD_TENANT_ID }}"
       ARM_USE_AZUREAD: true
 
@@ -139,7 +145,7 @@ jobs:
         -backend-config=resource_group_name="rg-landingzone-shared-prd-westeurope" \
         -backend-config=storage_account_name="${{ secrets.SENDERMADSWEDDING_PRD_TFSTATE_STORAGE_ACCOUNT_NAME }}" \
         -backend-config=container_name="${{ secrets.SENDERMADSWEDDING_PRD_TFSTATE_STORAGE_CONTAINER_NAME }}" \
-        -backend-config=key="sendermadswedding"
+        -backend-config=key="sendermadswedding.tfstate"
         
     - name: Terraform Validate
       run: terraform validate
@@ -148,22 +154,52 @@ jobs:
       id: plan
       run: terraform plan -input=false -var-file="envs/prd.tfvars" -out=tfplan
     
-    - name: Get Terraform Outputs 
-      id: terraform_outputs 
-      run: echo "::set-output name=static_web_app_resource_name::$(terraform output static_web_app_resource_name)"
+    - name: Terraform Apply
+      run: terraform apply -auto-approve tfplan
+
+    - name: Set output
+      id: terraform_outputs
+      run: echo "static_web_app_resource_name_output="$(terraform output static_web_app_resource_name)"" >> $GITHUB_OUTPUT
         
     # if: github.event.inputs.applyTF == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
 
-    # - name: Build And Deploy
-    #   id: builddeploy
-    #   uses: Azure/static-web-apps-deploy@v1
-    #   with:
-    #     azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
-    #     action: "upload"
-    #     app_location: "./src"
-    #     api_location: ""
-    #     skip_app_build: true
-    #     skip_api_build: true
-    #     config_file_location: ./src
+  deployment_job_prd:
+    runs-on: ubuntu-latest
+    environment: prd
+    needs: build_job_prd
+    name: Deploy PRD application code
+    if: github.event.inputs.deployAppCode == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.SENDERMADSWEDDING_PRD_CLIENT_ID }}
+        tenant-id: ${{ secrets.SENDERMADSWEDDING_PRD_TENANT_ID }}
+        subscription-id: ${{ secrets.SENDERMADSWEDDING_PRD_SUBSCRIPTION_ID }}
+
+    - name: Fetch SWA Token
+      id: fetchSWAToken
+      uses: azure/CLI@v1
+      with: 
+          inlineScript: |
+              localdeploymentToken=$(az staticwebapp secrets list --name "${{ needs.build_job_PRD.outputs.static_web_app_resource_name_output }}" --query "properties.apiKey" -o tsv)
+              echo "::add-mask::$localdeploymentToken"
+              echo "deploymenttoken=$localdeploymentToken" >> "$GITHUB_OUTPUT"
+              echo "Fetched token."
+      
+    - name: Build And Deploy
+      id: builddeploy
+      uses: Azure/static-web-apps-deploy@v1
+      with:
+        azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
+        action: "upload"
+        app_location: ./src
+        api_location: ""
+        skip_app_build: true
+        skip_api_build: true
+        config_file_location: ./src
 
     
