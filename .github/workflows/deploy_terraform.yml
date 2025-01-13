@@ -2,7 +2,7 @@ name: Deploy Terraform
 
 on:
   push:
-    branches: ["main", "feature/fix-domains"]
+    branches: ["main"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -116,7 +116,7 @@ jobs:
     environment: prd
     name: Deploy PRD Infrastructure
     needs: deployment_job_dev
-    #if: github.event.inputs.deployPrd == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
+    if: github.event.inputs.deployPrd == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
 
     outputs:
       static_web_app_resource_name_output: ${{ steps.terraform_outputs.outputs.static_web_app_resource_name_output }}
@@ -169,6 +169,7 @@ jobs:
     environment: prd
     needs: build_job_prd
     name: Deploy PRD application code
+    if: github.event.inputs.deployAppCode == 'true' && github.event_name != 'push' && github.event_name != 'pull_request'
     
     steps:
     - uses: actions/checkout@v3
@@ -193,7 +194,6 @@ jobs:
     - name: Build And Deploy
       id: builddeploy
       uses: Azure/static-web-apps-deploy@v1
-      if: github.event.inputs.deployAppCode == 'true'
       with:
         azure_static_web_apps_api_token: ${{steps.fetchSWAToken.outputs.deploymenttoken}}
         action: "upload"
