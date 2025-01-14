@@ -101,7 +101,7 @@ input, select, textarea {
 	}
 
 	body {
-		background: #d4c39d;
+		background: #F8F5EF;
 	}
 
 		body.is-preload *, body.is-preload *:before, body.is-preload *:after {
@@ -201,10 +201,10 @@ input, select, textarea {
 		}
 
 			h1.major:after {
-				background-image: -moz-linear-gradient(to right, #d4c39d, #4d4d4d);
-				background-image: -webkit-linear-gradient(to right, #d4c39d, #4d4d4d);
-				background-image: -ms-linear-gradient(to right, #d4c39d, #4d4d4d);
-				background-image: linear-gradient(to right, #d4c39d, #4d4d4d);
+				background-image: -moz-linear-gradient(to right, #F8F5EF, #4d4d4d);
+				background-image: -webkit-linear-gradient(to right, #F8F5EF, #4d4d4d);
+				background-image: -ms-linear-gradient(to right, #F8F5EF, #4d4d4d);
+				background-image: linear-gradient(to right, #F8F5EF, #4d4d4d);
 				-moz-transition: max-width 0.2s ease;
 				-webkit-transition: max-width 0.2s ease;
 				-ms-transition: max-width 0.2s ease;
@@ -1919,7 +1919,7 @@ input, select, textarea {
 		button.primary,
 		.button.primary {
 			background-color: #ffffff;
-			color: #d4c39d !important;
+			color: #F8F5EF !important;
 		}
 
 			input[type="submit"].primary:after,
@@ -1982,6 +1982,9 @@ input, select, textarea {
 				.button.white {
 					border-color: rgba(255, 255, 255, 0.15) !important;
 					color: #ffffff !important;
+					font-size: 0.7em;
+					font-weight: bolder;
+					font-family: 'Montserrat', sans-serif;
 				}
 				
 				.button.white:after {
@@ -2389,7 +2392,7 @@ input, select, textarea {
 
 		select option {
 			color: #ffffff;
-			background: #d4c39d;
+			background: #F8F5EF;
 		}
 
 		select:focus::-ms-value {
@@ -2558,7 +2561,7 @@ input, select, textarea {
 			display: block;
 			background: #ffffff;
 			border-radius: 100%;
-			color: #d4c39d;
+			color: #F8F5EF;
 			text-align: center;
 			line-height: 2.5em;
 			margin: 0 0 1.3em 0;
@@ -2569,15 +2572,15 @@ input, select, textarea {
 			}
 
 				.wrapper.style1 .icon.major:before {
-					color: #d4c39d;
+					color: #F8F5EF;
 				}
 
 				.wrapper.style1-alt .icon.major:before {
-					color: #d4c39d;
+					color: #F8F5EF;
 				}
 
 				.wrapper.style2 .icon.major:before {
-					color: #d4c39d;
+					color: #F8F5EF;
 				}
 
 				.wrapper.style2-alt .icon.major:before {
@@ -3269,19 +3272,19 @@ input, select, textarea {
 			}
 
 		.wrapper.alt {
-			background-color: #d4c39d;
+			background-color: #F8F5EF;
 		}
 
 		.wrapper.style1 {
-			background-color: #d4c39d;
+			background-color: #F8F5EF;
 		}
 
 		.wrapper.style1-alt {
-			background-color: #d4c39d;
+			background-color: #F8F5EF;
 		}
 
 		.wrapper.style2 {
-			background-color: #d4c39d;
+			background-color: #F8F5EF;
 		}
 
 		.wrapper.style2-alt {
@@ -3403,7 +3406,7 @@ input, select, textarea {
 		display: -webkit-flex;
 		display: -ms-flex;
 		display: flex;
-		background-color: #d4c39d;
+		background-color: #F8F5EF;
 		cursor: default;
 		padding: 1.75em 2em;
 	}
@@ -3557,7 +3560,7 @@ input, select, textarea {
 
 	#sidebar {
 		padding: 2.5em 2.5em 0.5em 2.5em ;
-		background: #d4c39d;
+		background: #F8F5EF;
 		cursor: default;
 		height: 100vh;
 		left: 0;
@@ -3794,14 +3797,14 @@ input, select, textarea {
 			}
 
 			#sidebar nav a:before {
-				background: #d4c39d;
+				background: #F8F5EF;
 			}
 
 			#sidebar nav a:after {
-				background-image: -moz-linear-gradient(to right, #d4c39d, #4d4d4d);
-				background-image: -webkit-linear-gradient(to right, #d4c39d, #4d4d4d);
-				background-image: -ms-linear-gradient(to right, #d4c39d, #4d4d4d);
-				background-image: linear-gradient(to right, #d4c39d, #4d4d4d);
+				background-image: -moz-linear-gradient(to right, #F8F5EF, #4d4d4d);
+				background-image: -webkit-linear-gradient(to right, #F8F5EF, #4d4d4d);
+				background-image: -ms-linear-gradient(to right, #F8F5EF, #4d4d4d);
+				background-image: linear-gradient(to right, #F8F5EF, #4d4d4d);
 				-moz-transition: max-width 0.2s ease;
 				-webkit-transition: max-width 0.2s ease;
 				-ms-transition: max-width 0.2s ease;
@@ -3902,7 +3905,7 @@ input, select, textarea {
 				position: fixed;
 				width: 100%;
 				z-index: 10000;
-				background: #d4c39d;
+				background: #F8F5EF;
 				padding: 0.5em;
 			}
 			#sidebar > .inner {
