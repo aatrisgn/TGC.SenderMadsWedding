@@ -3775,7 +3775,7 @@ input, select, textarea {
 			border: 0;
 			color: rgba(0, 0, 0, 0.35);
 			display: block;
-			font-size: 0.6em;
+			font-size: 0.9em;
 			font-weight: bold;
 			letter-spacing: 0.25em;
 			line-height: 1.75;
@@ -3930,7 +3930,7 @@ input, select, textarea {
 			}
 			#sidebar nav a {
 				padding: 0.4em 0;
-				font-size: 0.5em;
+				font-size: 0.6em;
 				height: auto;
 				line-height: 1;
 			}
@@ -3961,7 +3961,7 @@ input, select, textarea {
 }
 
 #intro p {
-    font-size: 1em;
+    font-size: 1.2em;
     font-weight: 500;
     color: #ffffff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
