@@ -3936,48 +3936,90 @@ input, select, textarea {
 			}
 		}
 
-/* Intro */
+/* Intro Section */
+#intro {
+    background-attachment: fixed;
+    background-image: url("images/pic01.jpg");
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
 
-	#intro {
-		background-attachment: fixed;
-		background-image: url("images/pic01.jpg");
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-	}
+/* Dark overlay */
+#intro::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
 
-		#intro p {
-			font-size: 1.5em;
-			font-weight: 600;
-			color: #ffffff;
-		}
-		#intro h1 {
-			font-size: 1.60em;
-			font-weight: 550;
-			color: #ffffff;
-			font-family: 'Lato', sans-serif;
-		}
+#intro p {
+    font-size: 1em;
+    font-weight: 500;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1;
+}
 
-			@media screen and (max-width: 980px) {
+#intro h1 {
+    font-size: 4em;
+    font-weight: 400;
+    color: #ffffff;
+    font-family: 'Great Vibes', 'Playfair Display', cursive;
+    letter-spacing: 0.03em;
+    line-height: 1.6;
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(255, 192, 203, 0.3);
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1em;
+    margin-top: 4em;
+}
 
-				#intro p br {
-					display: none;
-				}
+#intro h1 span {
+    display: block;
+    font-size: 0.6em;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-weight: 300;
+    margin-top: 0.8em;
+    letter-spacing: 0.06em;
+    opacity: 0.95;
+}
 
-			}
+/* Media Queries */
+@media screen and (max-width: 1280px) {
+    #intro {
+        background-attachment: scroll;
+    }
+    
+    #intro::before {
+        background: rgba(0, 0, 0, 0.25);
+    }
+}
 
-			@media screen and (max-width: 736px) {
+@media screen and (max-width: 980px) {
+    #intro p br {
+        display: none;
+    }
+}
 
-				#intro p {
-					font-size: 1em;
-				}
-
-			}
-
-		@media screen and (max-width: 1280px) {
-
-			#intro {
-				background-attachment: scroll;
-			}
-
-		}
+@media screen and (max-width: 736px) {
+    #intro h1 {
+        font-size: 2.5em;
+        margin-top: 3em;
+    }
+    
+    #intro p {
+        font-size: 1em;
+    }
+}
