@@ -1980,9 +1980,9 @@ input, select, textarea {
 					opacity: 0.1;
 				}
 				.button.white {
-					border-color: rgba(255, 255, 255, 0.15) !important;
-					color: #ffffff !important;
-					font-size: 0.7em;
+					border-color: rgba(255, 255, 255, 0.919) !important;
+					color: rgba(215, 206, 132, 0.919)!important;
+					font-size: 0.9em;
 					font-weight: bolder;
 					font-family: 'Montserrat', sans-serif;
 				}
@@ -1992,7 +1992,7 @@ input, select, textarea {
 				}
 				
 				.button.white:hover {
-					border-color: rgba(255, 255, 255, 0.55) !important;
+					border-color: rgb(135, 132, 82) !important;
 				}
 				
 				.button.white.primary {
@@ -3775,7 +3775,7 @@ input, select, textarea {
 			border: 0;
 			color: rgba(0, 0, 0, 0.35);
 			display: block;
-			font-size: 0.9em;
+			font-size: 0.8em;
 			font-weight: bold;
 			letter-spacing: 0.25em;
 			line-height: 1.75;
