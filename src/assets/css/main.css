@@ -1918,7 +1918,7 @@ input, select, textarea {
 		input[type="button"].primary,
 		button.primary,
 		.button.primary {
-			background-color: #cfc57871;
+			background-color: #2626263e;
 			color: #F8F5EF !important;
 		}
 
@@ -1980,8 +1980,8 @@ input, select, textarea {
 					opacity: 0.1;
 				}
 				.button.white {
-					border-color: rgba(255, 255, 255, 0.919) !important;
-					color: rgba(215, 206, 132, 0.919)!important;
+					border-color: rgba(15, 15, 15, 0.919) !important;
+					color: rgba(0, 0, 0, 0.919)!important;
 					font-size: 0.9em;
 					font-weight: bolder;
 					font-family: 'Montserrat', sans-serif;
@@ -1992,7 +1992,7 @@ input, select, textarea {
 				}
 				
 				.button.white:hover {
-					border-color: rgb(135, 132, 82) !important;
+					border-color: rgb(0, 0, 0) !important;
 				}
 				
 				.button.white.primary {
@@ -3408,7 +3408,7 @@ input, select, textarea {
 		display: flex;
 		background-color: #F8F5EF;
 		cursor: default;
-		padding: 1.75em 2em;
+		padding: 1.75em 1em;
 	}
 
 		#header > .title {
@@ -3473,7 +3473,7 @@ input, select, textarea {
 
 			#header {
 				display: block;
-				padding: 0 2em;
+				padding: 0 1em;
 				text-align: left;
 			}
 
@@ -3492,7 +3492,7 @@ input, select, textarea {
 					}
 
 						#header > nav > ul > li a {
-							height: 6em;
+							height: 7em;
 							line-height: 6em;
 						}
 
@@ -3974,15 +3974,15 @@ input, select, textarea {
     font-weight: 400;
     color: #ffffff;
     font-family: 'Great Vibes', 'Playfair Display', cursive;
-    letter-spacing: 0.03em;
-    line-height: 1.6;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
     text-shadow: 
         2px 2px 4px rgba(0, 0, 0, 0.3),
         0 0 30px rgba(255, 192, 203, 0.3);
     position: relative;
     z-index: 1;
-    margin-bottom: 1em;
-    margin-top: 4em;
+    margin-bottom: 0.2em;
+    margin-top: 3.2em;
 }
 
 #intro h1 span {
@@ -3991,7 +3991,7 @@ input, select, textarea {
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-style: italic;
     font-weight: 300;
-    margin-top: 0.8em;
+    margin-top: 0.2em;
     letter-spacing: 0.06em;
     opacity: 0.95;
 }
@@ -4015,11 +4015,11 @@ input, select, textarea {
 
 @media screen and (max-width: 736px) {
     #intro h1 {
-        font-size: 2.1em;
-        margin-top: 3em;
+        font-size: 2em;
+        margin-top: 1.6em;
     }
     
     #intro p {
-        font-size: 1em;
+        font-size: 0.9em;
     }
 }
